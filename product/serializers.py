@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from decimal import Decimal
-from .models import Category, Product
+from .models import Category, Product, Review
 
 class CategorySerializer(serializers.ModelSerializer):
     product_count = serializers.IntegerField(read_only=True)
@@ -23,3 +23,12 @@ class ProductSerializer(serializers.ModelSerializer):
         if price < 0:
             raise serializers.ValidationError('Price could not be negative...')
         return price
+
+class ReviewSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        product_id = self.context['product_id']
+        return Review.objects.create(product_id=product_id, **validated_data)
+
+    class Meta:
+        model = Review
+        fields = ['id', 'name', 'description']
