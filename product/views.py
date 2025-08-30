@@ -8,7 +8,7 @@ from django.db.models import Count
 from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.permissions import DjangoModelPermissions, DjangoModelPermissionsOrAnonReadOnly
+from rest_framework.permissions import DjangoModelPermissions
 from .paginations import DefaultPagination
 from api.permissions import IsAdminOrReadOnly, FullDjangoModelPermission
 from .permissions import IsReviewAuthorOrReadOnly
@@ -25,11 +25,6 @@ class ProductViewSet(ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     # permission_classes = [FullDjangoModelPermission]
     # permission_classes = [DjangoModelPermissionsOrAnonReadOnly]
-
-    # def get_permissions(self):
-    #     if self.request.method == 'GET':
-    #         return [AllowAny()]
-    #     return [IsAdminUser()]
 
     def destroy(self, request, *args, **kwargs):
         product = self.get_object()

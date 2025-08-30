@@ -25,29 +25,35 @@ class CartItem(models.Model):
         return f"{self.quantity} x {self.product.name}"
     
 class Order(models.Model):
-    PENDING = 'Pending'
+    NOT_PAID = 'Not Paid'
+    READY_TO_SHIPPED = 'Ready To Shipped'
     SHIPPED = 'Shipped'
     DELIVERED = 'Delivered'
+    CANCELLED = 'Cancelled'
     STATUS_CHOICES = [
-        (PENDING, 'Pending'),
+        (NOT_PAID, 'Not Paid'),
+        (READY_TO_SHIPPED, 'Ready To Shipped'),
         (SHIPPED, 'Shipped'),
-        (DELIVERED, 'Delivered')
+        (DELIVERED, 'Delivered'),
+        (CANCELLED, 'Cancelled'),
     ]
 
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='orders')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=NOT_PAID)
     total_price = models.DecimalField(max_digits=9, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Order id: {self.id} by {self.user.first_name} {self.user.last_name}"
+        return f"Order id: {self.id} by {self.user.first_name} {self.user.last_name} - {self.status}"
     
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=9, decimal_places=2)
+    total_price = models.DecimalField(max_digits=9, decimal_places=2)
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
