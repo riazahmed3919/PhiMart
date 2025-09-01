@@ -19,7 +19,6 @@ class ProductViewSet(ModelViewSet):
     - Allows authenticated Admin to Create, Update & Delete Products.
     - Allows Users to brows and filter Products.
     """
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = ProductFilter
@@ -27,6 +26,9 @@ class ProductViewSet(ModelViewSet):
     search_fields = ['name', 'description']
     ordering_fields = ['price', 'updated_at']
     permission_classes = [IsAdminOrReadOnly]
+
+    def get_queryset(self):
+        return Product.objects.prefetch_related('images').all()
 
     def destroy(self, request, *args, **kwargs):
         product = self.get_object()
